@@ -4,9 +4,9 @@ import Data.IntMap as IMap
 import Data.Map.Strict as Map
 import Data.Set as Set
 
-data Codegen = C | JS deriving (Show, Eq, Ord)
+data Codegen = C | JS | MLF deriving (Show, Eq, Ord)
 type Index = Int
-data CompatCodegen = ANY | C_CG | NODE_CG | NONE
+data CompatCodegen = ANY | C_CG | NODE_CG | MLF_CG | NONE
 
 -- A TestFamily groups tests that share the same theme
 data TestFamily = TestFamily {
@@ -24,9 +24,10 @@ data TestFamily = TestFamily {
 toCodegenSet :: CompatCodegen -> Maybe (Set Codegen)
 toCodegenSet compatCodegen = fmap Set.fromList mList where
   mList = case compatCodegen of
-            ANY   -> Just [ C, JS ]
+            ANY   -> Just [ C, JS, MLF ]
             C_CG  -> Just [ C ]
             NODE_CG -> Just [ JS ]
+            MLF_CG -> Just [ MLF ]
             NONE  -> Nothing
 
 testFamilies :: [TestFamily]
@@ -123,6 +124,7 @@ testFamiliesData = [
     , (  7, C_CG )
     , (  8, C_CG )
     , (  9, C_CG )
+    , ( 10, MLF_CG )
     ]),
   ("folding",         "Folding",
     [ (  1, ANY  )]),

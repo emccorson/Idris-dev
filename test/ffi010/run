@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+${IDRIS:-idris} $@ ffi010.idr -p FFI_OCaml --codegen malfunction -o ffi010.o
+./ffi010.o <<< 'glory glory'
+rm -f ffi010 *.ibc *.o

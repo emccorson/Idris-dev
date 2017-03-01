@@ -36,24 +36,25 @@ testDirectory = "test"
 
 -------------------------------------------------------------------- [ Options ]
 
--- The `--node` option makes idris use the node code generator
+-- The `--malfunction` option makes idris use the malfunction code generator
 -- As a consequence, incompatible tests are removed
 
-newtype NodeOpt = NodeOpt Bool deriving (Eq, Ord, Typeable)
+newtype MalfunctionOpt = MalfunctionOpt Bool deriving (Eq, Ord, Typeable)
 
-nodeArg = "node"
-nodeHelp = "Performs the tests with the node code generator"
-instance IsOption NodeOpt where
-  defaultValue = NodeOpt False
-  parseValue = fmap NodeOpt . safeRead
-  optionName = return nodeArg
-  optionHelp = return nodeHelp
-  optionCLParser = NodeOpt <$> switch (long nodeArg <> help nodeHelp)
+malfunctionArg = "malfunction"
+malfunctionHelp = "Performs the tests with the malfunction code generator"
+instance IsOption MalfunctionOpt where
+  defaultValue = MalfunctionOpt False
+  parseValue = fmap MalfunctionOpt . safeRead
+  optionName = return malfunctionArg
+  optionHelp = return malfunctionHelp
+  optionCLParser = MalfunctionOpt <$>
+                     switch (long malfunctionArg <> help malfunctionHelp)
 
 ingredients :: [Ingredient]
 ingredients = defaultIngredients ++
               [rerunningTests [consoleTestReporter],
-               includingOptions [Option (Proxy :: Proxy NodeOpt)] ]
+               includingOptions [Option (Proxy :: Proxy MalfunctionOpt)] ]
 
 ----------------------------------------------------------------------- [ Core ]
 
@@ -106,9 +107,9 @@ runTest path flags = do
 main :: IO ()
 main =
   defaultMainWithIngredients ingredients $
-    askOption $ \(NodeOpt node) ->
-      let (codegen, flags) = if node then (JS, ["--codegen", "node"])
-                                     else (C , [])
+    askOption $ \(MalfunctionOpt malfunction) ->
+      let (codegen, flags) = if malfunction then (MLF, ["--codegen", "malfunction"])
+                                            else (C , [])
        in
         mkGoldenTests (testFamiliesForCodegen codegen)
                     (flags ++ idrisFlags)
